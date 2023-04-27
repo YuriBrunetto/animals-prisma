@@ -10,12 +10,16 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Home({ animals }) {
   const [animal, setAnimal] = useState('')
+  const [loading, setLoading] = useState(false)
   const route = useRouter()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
+    // save to db
     await axios.post('/api/animals', { animal })
     setAnimal('')
+    setLoading(false)
     // refresh page
     route.reload()
   }
@@ -66,8 +70,9 @@ export default function Home({ animals }) {
             <button
               type='submit'
               className='font-bold text-[12px] bg-pink-600 py-2 px-4 rounded-lg mt-2 shadow-md border border-1 border-white/[0.2]'
+              disabled={loading}
             >
-              Create animal
+              {!loading ? 'Create animal' : 'Creating...'}
             </button>
           </form>
         </section>
