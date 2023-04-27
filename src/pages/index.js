@@ -15,6 +15,9 @@ export default function Home({ animals }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (animal === '') return
+
     setLoading(true)
     // save to db
     await axios.post('/api/animals', { animal })
