@@ -3,15 +3,21 @@ import { Inter } from 'next/font/google'
 import { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en'
 
 import { prisma } from '../../server/db/client'
 
 const inter = Inter({ subsets: ['latin'] })
 
+TimeAgo.addDefaultLocale(en)
+
 export default function Home({ animals }) {
   const [animal, setAnimal] = useState('')
   const [loading, setLoading] = useState(false)
   const route = useRouter()
+
+  const timeAgo = new TimeAgo('en-US')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -46,15 +52,23 @@ export default function Home({ animals }) {
 
         <section className='mt-16 flex flex-col items-center'>
           <h3 className='font-bold text-2xl'>List of your current animals</h3>
+          {animals?.length === 0 && (
+            <p className='mt-4 italic text-white/[0.4]'>No animals yet.</p>
+          )}
           {/* list of animals */}
-          <ul className='mt-4 list-decimal'>
-            {animals?.length === 0 && (
-              <p className='italic text-white/[0.4]'>No animals yet.</p>
-            )}
+          <div className='mt-4 grid grid-cols-2 gap-2'>
             {animals?.map((animal) => (
-              <li key={animal.id}>{animal.name}</li>
+              <div
+                key={animal.id}
+                className='border border-1 border-white/[0.5] p-3 rounded-md flex flex-col items-center justify-center'
+              >
+                <div className='font-bold leading-none'>{animal.name}</div>
+                <span className='text-white/[0.5] text-[10px] mt-1'>
+                  {timeAgo.format(new Date(animal.createdAt))}
+                </span>
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
 
         <section className='mt-16'>
